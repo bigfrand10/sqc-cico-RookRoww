@@ -37,11 +37,37 @@ public class Main {
   private static class InputFilter extends DocumentFilter {
     private static final int MAX_LENGTH = 8;
 
+    // ticket 401
+    // only allow numbers and only allow 8 digits to be input into the text field
+    private boolean isValidInput(FilterBypass fb, int offset, int lengthToDelete,
+        String stringToAdd) throws BadLocationException {
+      if (fb.getDocument() == null) {
+        return false;
+      }
+
+      String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+      String replacement = stringToAdd == null ? "" : stringToAdd;
+      String proposedText = currentText.substring(0, offset)
+          + replacement
+          + currentText.substring(offset + lengthToDelete);
+
+      if (proposedText.length() > MAX_LENGTH) {
+        return false;
+      }
+
+      for (int index = 0; index < proposedText.length(); index++) {
+        if (proposedText.charAt(index) < '0' || proposedText.charAt(index) > '9') {
+          return false;
+        }
+      }
+      return true;
+    }
+
     @Override
     public void insertString(FilterBypass fb, int offset, String stringToAdd, AttributeSet attr)
         throws BadLocationException
     {
-      if (fb.getDocument() != null) {
+      if (isValidInput(fb, offset, 0, stringToAdd)) {
         super.insertString(fb, offset, stringToAdd, attr);
       }
       else {
@@ -53,7 +79,7 @@ public class Main {
     public void replace(FilterBypass fb, int offset, int lengthToDelete, String stringToAdd, AttributeSet attr)
         throws BadLocationException
     {
-      if (fb.getDocument() != null) {
+      if (isValidInput(fb, offset, lengthToDelete, stringToAdd)) {
         super.replace(fb, offset, lengthToDelete, stringToAdd, attr);
       }
       else {

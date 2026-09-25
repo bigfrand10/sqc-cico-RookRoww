@@ -61,4 +61,13 @@ Use `./build.sh` to build CiCo and `./run.sh` to run it if using the command lin
 ## Expected results
 * Should display "Developer" for the user name.
 
+# Module 4
 
+## test steps
+1 build and run cico
+2 enter abcd and click update
+3 enter 111111111 and click update
+
+## expected results
+* values outside of the number values 0-9 should not appear
+* values that are longer than 8 digits long should not appear
